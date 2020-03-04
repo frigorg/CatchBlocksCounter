@@ -43,51 +43,34 @@ public class DevelopersVisitor implements CommitVisitor {
 				
 				processor.execute(m.getSourceCode());
 				
-				if (visitor.getMethodNameList().size() > 0){
-					
-					List<String> MethodNameList = visitor.getMethodNameList();
-					List<TryStatementVisitor> tryList = visitor.getTryList();
-					
-					for (int i = 0; i < visitor.getMethodNameList().size(); i++) {
-					
-						for (String exception : tryList.get(i).getCatchExceptions()) { 
-						
-						
-							ClassInfo info = new ClassInfo();
-							
-							info.setClassName(m.getFileName());
-							info.setMethodName(MethodNameList.get(i));
-							info.setCommitDate(commit.getDate());
-							info.setTryStatements(tryList.get(i).getQuantity());
-							info.setEmptyCatchBlocks(tryList.get(i).getEmptyCatchBlock());
-							info.setException(exception);
-							
-							if (!this.classes.containsKey(commit.getHash())) {
-								ArrayList<ClassInfo> infoList = new ArrayList<ClassInfo>();
-		
-								infoList.add(info);
-			
-								this.classes.put(commit.getHash(), infoList);
-							} else {
-								classes.get(commit.getHash()).add(info);
-							}
-						
-						}
-						
-						
-						
-					}
+				ClassInfo info = new ClassInfo();
+				
+				info.setClassName(m.getFileName());
+				info.setCommitDate(commit.getDate());
+				info.setMethodsQuantity(visitor.methodQuantity());
+				
+				if (!this.classes.containsKey(commit.getHash())) {
+					ArrayList<ClassInfo> infoList = new ArrayList<ClassInfo>();
+
+					infoList.add(info);
+
+					this.classes.put(commit.getHash(), infoList);
+				} else {
+					classes.get(commit.getHash()).add(info);
 				}
-			}	
+			}
 		}
 	}	
 	
+	/*
+	 * Cria o diretório para os resultados baseado no nome do autor do projeto analisado e repositório
+	 * */
 	@Override
 	public void finalize(SCMRepository repo, PersistenceMechanism writer) {
-		String[] splittedOrigin = repo.getOrigin().split("/");
+		String[] splittedOriginPath = repo.getOrigin().split("/");
 		
-		this.resultPath = splittedOrigin[splittedOrigin.length-2];
-		this.resultPath += "/" + splittedOrigin[splittedOrigin.length-1] + "/";
+		this.resultPath = splittedOriginPath[splittedOriginPath.length-2];
+		this.resultPath += "/" + splittedOriginPath[splittedOriginPath.length-1] + "/";
 		
 		createDir(this.resultPath);
 	}
@@ -101,17 +84,17 @@ public class DevelopersVisitor implements CommitVisitor {
 	void saveResultInOneFile() {
 		CSVFile file = new CSVFile(this.resultPath + "result.csv");
 		
-		file.write("commithash", "commitdate", "classname", "methodname", "trystatements", "emptycatchblocks", "exception");
+		file.write("commithash", "commitdate", "classname", "methodQuantity");
 		
 		classes.forEach((key, value) -> {
 			value.forEach((info)->{
 				String date = "" + info.getCommitDate().getTime();
-				file.write(key, date, info.getClassName(), info.getMethodName(), info.getTryStatements(), info.getEmptyCatchBlocks(), info.getException());
+				file.write(key, date, info.getClassName(), info.getMethodsQuantity());
 			});
 		});
 	}
 	
-	void saveResultByClass() {
+	void saveResultByMethod() {
 
 		Set<String> writtenMethods = new HashSet<String>();
 		
@@ -125,19 +108,24 @@ public class DevelopersVisitor implements CommitVisitor {
 				
 				if (writtenMethods.add(className)) {
 					file = new CSVFile(this.resultPath + className);
-					file.write("commithash", "commitdate", "classname", "methodname", "trystatements", "emptycatchblocks", "exception");
+					file.write("commithash", "commitdate", "classname", "methodQuantity");
 				}else{
 					file = new CSVFile(this.resultPath + className, true);
 				}
 				
 				String date = "" + info.getCommitDate().getTime();
-				file.write(key, date, info.getClassName(), info.getMethodName(), info.getTryStatements(), info.getEmptyCatchBlocks(), info.getException());
+				file.write(key, date, info.getClassName(), info.getMethodsQuantity());
 				
 			});
 		});
 		
 	}
 	
+	/*
+	 * Cria uma pasta
+	 * 
+	 * @param caminho onde será criada a pasta
+	 * */
 	void createDir(String path) {
 
         Path p = Paths.get(path);

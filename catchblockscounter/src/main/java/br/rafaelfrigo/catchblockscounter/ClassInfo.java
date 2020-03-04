@@ -6,35 +6,16 @@ public class ClassInfo {
 
 	private Calendar commitDate;
 	private String className;
-	private String methodName;
-	private int tryStatements;
-	private int emptyCatchBlocks;
-	private String exception;
+	private int methodsQuantity;
 	
 	public Calendar getCommitDate() {
 		return commitDate;
 	}
 	
-	public int getTryStatements() {
-		return tryStatements;
-	}
-	
-	public int getEmptyCatchBlocks() {
-		return emptyCatchBlocks;
-	}
-
 	public void setCommitDate(Calendar commitDate) {
 		this.commitDate = commitDate;
 	}
-
-	public void setTryStatements(int tryStatements) {
-		this.tryStatements = tryStatements;
-	}
-
-	public void setEmptyCatchBlocks(int emptyCatchBlocks) {
-		this.emptyCatchBlocks = emptyCatchBlocks;
-	}
-
+	
 	public String getClassName() {
 		return className;
 	}
@@ -43,20 +24,14 @@ public class ClassInfo {
 		this.className = className;
 	}
 
-	public String getMethodName() {
-		return methodName;
+	public int getMethodsQuantity() {
+		return methodsQuantity;
 	}
 
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
+	public void setMethodsQuantity(int methodsQuantity) {
+		this.methodsQuantity = methodsQuantity;
 	}
 
-	public String getException() {
-		return exception;
-	}
-
-	public void setException(String exception) {
-		this.exception = exception;
-	}
+	
 	
 }

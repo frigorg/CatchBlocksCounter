@@ -45,7 +45,7 @@ public class CatchBlocksCounter implements Study {
 			.mine();
 		
 //		visitor.saveResultInOneFile();
-		visitor.saveResultByClass();
+		visitor.saveResultByMethod();
 	}
 
 }
